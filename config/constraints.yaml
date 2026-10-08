@@ -1,0 +1,206 @@
+# Hard constraints (must be satisfied)
+# Every flag here is read by the engine; toggling it changes the model.
+hard_constraints:
+  # Room can't double-book
+  room_no_overlap: true
+
+  # Faculty can't double-book
+  faculty_no_overlap: true
+
+  # Enrollment in a section can't exceed its assigned room's capacity
+  # (small rooms stay usable — enrollment is capped, the room isn't excluded)
+  respect_room_capacity: true
+
+  # Course must go in compatible room type
+  match_room_type: true
+
+  # Faculty can only teach approved courses
+  faculty_approval_required: true
+
+  # Linked courses (PARENT/CHILD) can't overlap
+  linked_no_overlap: true
+
+  # Minimum travel time between buildings (minutes); 0 disables
+  min_travel_time: 10
+
+  # Graduation-critical demands must be satisfied
+  # When true, seniors needing required courses MUST get them
+  graduation_critical_required: true
+
+  # Enforce per-instructor credit-load limits (max_credits + approved
+  # overload). Off for the synthetic pilot — enable when real teaching
+  # loads are loaded, and the staffing pre-flight will state overload
+  # shortfalls in credits ("approve at least N more overload credits").
+  faculty_load_limit: false
+
+  # Blanket approved overload beyond each instructor's max_credits
+  # (3 = everyone may take one extra 3-credit course). A per-person
+  # max_overload_credits column in faculty.csv overrides this.
+  default_overload_credits: 0
+
+# NOTE: student schedule overlap is intentionally NOT a constraint of the joint
+# model — per-student overlap clauses explode at scale. There, high-conflict
+# course pairs are kept apart via soft penalties gated by
+# conflict_urgency_threshold. Once the timetable is fixed, phase B
+# (solver.exact_sectioning) enforces per-student no-overlap exactly.
+
+# Soft constraints (preferences, weighted in objective)
+soft_constraints:
+  # Prefer not to schedule before this hour
+  early_morning_penalty:
+    hour: 8
+    weight: -10
+
+  # Prefer not to schedule after this hour
+  late_afternoon_penalty:
+    hour: 17
+    weight: -10
+
+  # Penalty per adjacent back-to-back teaching pair for faculty
+  # (faculty with preferences.allow_back_to_back are exempt)
+  back_to_back_penalty:
+    faculty:
+      weight: -20
+
+  # Bonus for honoring faculty preferences
+  faculty_preference_bonus:
+    weight: 5
+
+  # Penalty for uneven course distribution across days
+  day_balance_penalty:
+    weight: -15
+
+  # Penalty for uneven section distribution across rooms
+  room_balance_penalty:
+    weight: -5
+
+  # Penalty for uneven credit-load distribution across faculty
+  faculty_load_balance_penalty:
+    weight: -8
+
+  # Cost per OPEN section when section_settings.allow_section_closure is on
+  # — a gentle push to consolidate half-empty sibling sections. Keep the
+  # magnitude below a typical urgency score so a student is never
+  # sacrificed just to close a room.
+  open_section_penalty:
+    weight: -5
+
+  # Per DISTINCT COURSE an instructor teaches beyond their first ("preps"):
+  # three sections of MATH101 is one prep; three different courses is
+  # three. 0 disables.
+  faculty_prep_penalty:
+    weight: -15
+
+  # Per DISTINCT DAY an instructor teaches beyond their first — rewards
+  # compact teaching schedules (teach TR, research MWF). 0 disables.
+  faculty_teaching_day_penalty:
+    weight: -10
+
+  # Repair mode: stability rewards toward the published schedule when using
+  # "Repair" instead of "Re-solve" (an instructor resigned, a room went
+  # offline). Each weight is how strongly a section resists that kind of
+  # change; they must dwarf ordinary objective deltas so ONLY forced changes
+  # happen. time > instructor > room mirrors how disruptive each change is
+  # to people; "seat" is deliberately small — it keeps students in their
+  # planned sections on ties without ever outweighing a real conflict.
+  repair_anchor:
+    time: 50000
+    instructor: 30000
+    room: 10000
+    seat: 100
+
+# Conflict threshold: course pairs whose summed student-overlap urgency
+# exceeds this get soft penalties against overlapping time slots
+conflict_urgency_threshold: 50.0
+
+# Blocked periods - no classes scheduled during these times
+# Useful for faculty common hours, university events, etc.
+blocked_periods:
+  - name: "Faculty Common Hour"
+    days: ["M", "W", "F"]
+    start_time: "12:30"
+    end_time: "14:30"
+    reason: "Faculty meetings and office hours"
+
+# Solver settings
+solver:
+  # Maximum time to run solver (seconds)
+  max_time_seconds: 300
+
+  # Number of parallel workers (0 = use all cores)
+  num_workers: 0
+
+  # Log search progress
+  log_search_progress: false
+
+  # Two-phase warm start for big/tight instances: solve placement+staffing
+  # alone first (fast), then feed that solution into the full model so the
+  # solver optimizes instead of hunting for first feasibility.
+  # auto = engage at two_phase_threshold sections; true/false force it.
+  two_phase: auto
+  two_phase_threshold: 120
+
+  # Exact student sectioning (phase B): after the joint model fixes the
+  # timetable, re-seat students with a HARD per-student no-time-overlap rule.
+  exact_sectioning: true
+  # Phase B runs four stages: (1) GLOP LP relaxation (~15 s; bound is within
+  # 0.016% of the true optimum), (2) exact seating of graduation-critical
+  # demands, (3) deterministic greedy seatings around those seats, (4) CP-SAT
+  # polish from the best seating, kept only if it beats it. Always yields a
+  # complete collision-free seating. Measured (156 sections, 15,381 demands):
+  # stages 1-3 reach 4,312 seats within 1.0% of the bound in 28 s; 120 s
+  # polish ~1.6-0.9%; 600 s 0.2% (worth it for a final run). 0 = no polish.
+  sectioning_time_seconds: 120
+  # LP-guided stages (1-3); gap_pct in result.stats["sectioning"] is measured
+  # against the LP bound, so it is an honest distance from the true optimum.
+  sectioning_lp: true
+
+  # Order interchangeable sections of one course by first-meeting slot
+  # (prunes mirror-image search; does not change the optimum).
+  symmetry_breaking: true
+
+  # Room/faculty no-overlap encoding: "cliques" (time-point cliques, default)
+  # or "pairwise" (one constraint per overlapping slot pair, the old form).
+  no_overlap_formulation: cliques
+
+  # CP-SAT linearization_level (0-2). Unset = CP-SAT default.
+  # linearization_level: 1
+
+# Off-cadence escape valve. Courses whose offer_terms/cadence say "not this
+# term" still get sections when at least this many students demand one:
+# below the threshold the department's cadence is ENFORCED, at/above it the
+# optimizer overrides — and logs an OFF-CADENCE OVERRIDE warning so the
+# decision is visible. Set very high (e.g. 100000) to enforce cadences
+# strictly no matter the demand.
+off_cadence_demand_threshold: 10
+
+# Section sizing (how many sections a course gets, and how big they are)
+section_settings:
+  # Seats per generated section in "fixed" mode. A course's max_class_size
+  # column (catalog.csv) overrides this per course.
+  default_capacity: 30
+
+  # One extra section per this many students of demand
+  students_per_section: 25
+  max_sections_per_course: 5
+
+  # First generated CRN
+  crn_start: 10001
+
+  # "fixed": every section seats default_capacity (or the course's cap).
+  # "room": class size floats — the solver may fill a section up to its
+  # assigned room's capacity, and the saved section capacity is the size the
+  # room allows. Use max_class_size to keep floating sizes reasonable.
+  capacity_mode: fixed
+
+  # Global ceiling on floating class size in "room" mode (blank = the room
+  # is the only limit). A course's own max_class_size always wins over this.
+  max_class_size:
+
+  # Let the solver CLOSE under-enrolled sections instead of running them:
+  # an open section must seat at least the course's min_enrollment (or all
+  # of its demand when demand is below the minimum — nobody is stranded to
+  # satisfy a headcount), and a closed section frees its room and
+  # instructor. Cross-listed packs open/close together; pinned sections
+  # never close. Pair with soft_constraints.open_section_penalty.
+  allow_section_closure: false

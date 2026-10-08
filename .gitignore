@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Live server data must NEVER be committed. Ignore everything under data/ by
+# default, then re-include only the synthetic sample files and templates that
+# are intentionally tracked. A real (de-identified) extract dropped into data/
+# is ignored by default — it cannot be `git add`-ed without an explicit -f.
+/data/*
+!/data/sample/
+!/data/semester_guide_template.csv
+!/data/README.md
+
+# App-generated exports (schedules, enrollments, utilization) are student-level
+# data — the TUI writes them into exports/. Only docs stay trackable there.
+/exports/*.csv
+/exports/*.xlsx
+/exports/*.docx
+/exports/*.pdf
+
+# Broken pre-3.12 venv kept for reference (delete when convenient)
+.venv-py311-broken/
+backups/
+certs/
+data/access_token.txt
+*.db-wal
+*.db-shm
+
+# git bundles (scripts/make_bundle.sh) are written to the parent directory,
+# but ignore them here too in case one lands in the repo by mistake.
+*.bundle
+
+# Internal business documents (briefings, data-request packages, concept paper):
+# kept locally, never published.
+/exports/
+
+# Reference PDFs at the repo root are never published
+/*.pdf

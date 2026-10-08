@@ -1,0 +1,158 @@
+# Time slot definitions for university schedule
+# Duration in minutes, times in 24h format
+#
+# Schedule patterns:
+# - MWF 50-min: Start on the half hour (8:30, 9:30, 10:30, etc.)
+# - TR 75-min: Mixed start times (8:30, 10:00, 11:30, etc.)
+# - MW 75-min: Same duration as TR but on Monday/Wednesday
+# - Labs 150-min (2.5 hours): 8:30-11:00, 11:30-14:00, 14:30-17:00
+
+slot_types:
+  MWF_50:
+    pattern: "MWF"
+    days: ["M", "W", "F"]
+    duration: 50
+
+  TR_75:
+    pattern: "TR"
+    days: ["T", "R"]
+    duration: 75
+
+  MW_75:
+    pattern: "MW"
+    days: ["M", "W"]
+    duration: 75
+
+  LAB_150:
+    pattern: "single"
+    days: ["M", "T", "W", "R", "F"]
+    duration: 150
+
+# Actual slots generated from types
+slots:
+  # ─────────────────────────────────────────────────────────────────
+  # MWF 50-minute blocks (start on the half hour)
+  # ─────────────────────────────────────────────────────────────────
+  - type: MWF_50
+    start: "08:30"
+  - type: MWF_50
+    start: "09:30"
+  - type: MWF_50
+    start: "10:30"
+  - type: MWF_50
+    start: "11:30"
+  # Note: 12:30-14:30 is blocked (Faculty Common Hour)
+  - type: MWF_50
+    start: "14:30"
+  - type: MWF_50
+    start: "15:30"
+  - type: MWF_50
+    start: "16:30"
+
+  # ─────────────────────────────────────────────────────────────────
+  # TR 75-minute blocks (mixed start times)
+  # ─────────────────────────────────────────────────────────────────
+  - type: TR_75
+    start: "08:30"
+  - type: TR_75
+    start: "10:00"
+  - type: TR_75
+    start: "11:30"
+  - type: TR_75
+    start: "13:00"
+  - type: TR_75
+    start: "14:30"
+  - type: TR_75
+    start: "16:00"
+
+  # ─────────────────────────────────────────────────────────────────
+  # MW 75-minute blocks (same pattern as TR but on M/W)
+  # ─────────────────────────────────────────────────────────────────
+  - type: MW_75
+    start: "08:30"
+  - type: MW_75
+    start: "10:00"
+  - type: MW_75
+    start: "11:30"
+  - type: MW_75
+    start: "14:30"
+  - type: MW_75
+    start: "16:00"
+
+  # ─────────────────────────────────────────────────────────────────
+  # Lab blocks (2.5 hours = 150 minutes)
+  # Available on M, T, W, R, F
+  # ─────────────────────────────────────────────────────────────────
+
+  # Monday labs
+  - type: LAB_150
+    days: ["M"]
+    start: "08:30"
+  - type: LAB_150
+    days: ["M"]
+    start: "11:30"
+  - type: LAB_150
+    days: ["M"]
+    start: "14:30"
+
+  # Tuesday labs
+  - type: LAB_150
+    days: ["T"]
+    start: "08:30"
+  - type: LAB_150
+    days: ["T"]
+    start: "11:30"
+  - type: LAB_150
+    days: ["T"]
+    start: "14:30"
+
+  # Wednesday labs
+  - type: LAB_150
+    days: ["W"]
+    start: "08:30"
+  - type: LAB_150
+    days: ["W"]
+    start: "11:30"
+  - type: LAB_150
+    days: ["W"]
+    start: "14:30"
+
+  # Thursday labs
+  - type: LAB_150
+    days: ["R"]
+    start: "08:30"
+  - type: LAB_150
+    days: ["R"]
+    start: "11:30"
+  - type: LAB_150
+    days: ["R"]
+    start: "14:30"
+
+  # Friday labs
+  - type: LAB_150
+    days: ["F"]
+    start: "08:30"
+  - type: LAB_150
+    days: ["F"]
+    start: "11:30"
+  - type: LAB_150
+    days: ["F"]
+    start: "14:30"
+
+# ─────────────────────────────────────────────────────────────────
+# Custom single-day slots for courses with non-standard meeting patterns
+# Add as needed when course catalog data arrives.
+# These use pattern: "single" so each listed day gets its own slot.
+#
+# Example: A 2-hour Tuesday lecture + 6-hour Thursday remote lab
+#
+#  T_120:
+#    pattern: "single"
+#    days: ["T"]
+#    duration: 120
+#
+#  R_360:
+#    pattern: "single"
+#    days: ["R"]
+#    duration: 360
+# ─────────────────────────────────────────────────────────────────

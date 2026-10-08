@@ -1,0 +1,50 @@
+# Loaded by src/core/logsetup.py (init_logging) at TUI/API startup.
+# The file handler's filename below is a placeholder — logsetup points it at
+# <runlog_dir()>/gradimize.log ($GRADIMIZE_LOG_DIR, else repo logs/) so the
+# log always lands next to the run-*.jsonl logs and never in the data zone.
+# In TUI mode logsetup strips the console handler (stdout would corrupt the
+# Textual screen); edits here apply to both the API and the TUI file log.
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  standard:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  detailed:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: standard
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: detailed
+    filename: logs/gradimize.log  # overridden by logsetup — see header comment
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+
+loggers:
+  # All application modules live under the `src.` namespace (getLogger(__name__)).
+  src:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: false
+
+  ortools:
+    level: WARNING
+    handlers: [console]
+    propagate: false
+
+  uvicorn:
+    level: INFO
+    handlers: [console]
+    propagate: false
+
+root:
+  level: INFO
+  handlers: [console]

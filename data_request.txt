@@ -1,0 +1,144 @@
+Subject: Data Export Request for Course Scheduling Optimization System
+
+Dear [Registrar/IT Administrator],
+
+I am implementing a course scheduling optimization system for the Department of Natural and Applied Sciences. To configure the system, I need several data exports from Banner and DegreeWorks. Below are the specific data files needed, with the required fields for each.
+
+---
+
+1. STUDENT ROSTER (from Banner SGBSTDN/SPRIDEN)
+File: students.csv
+
+| Field           | Description                        | Banner Source                              |
+|-----------------|------------------------------------|--------------------------------------------|
+| id              | Banner ID (e.g., S00001234)        | SPRIDEN_ID                                 |
+| name            | Full name                          | SPRIDEN_FIRST_NAME + SPRIDEN_LAST_NAME     |
+| email           | Student email                      | GOREMAL_EMAIL_ADDRESS                      |
+| class_standing  | FR, SO, JR, SR                     | SGBSTDN_STST_CODE or derived from hours    |
+| credits_earned  | Total earned hours                 | SGBSTDN_TOTAL_CREDIT_HRS                   |
+| major           | Primary major code                 | SGBSTDN_MAJR_CODE_1                        |
+| concentration   | Concentration/track code           | SGBSTDN_MAJR_CODE_CONC_1                   |
+| minor           | Minor code (if any)                | SGBSTDN_MINR_CODE_1                        |
+| is_honors       | Honors program flag                | SGBSTDN_HONORS_IND or attribute            |
+| is_athlete      | Student athlete flag               | SGRSATT or athletic attribute              |
+| catalog_year    | Catalog year                       | SGBSTDN_TERM_CODE_ADMIT (year portion)     |
+
+Scope: All currently enrolled students (Active status)
+
+---
+
+2. STUDENT COURSE HISTORY (from Banner SHRTCKN/SHRTCKG)
+File: course_history.csv
+
+| Field          | Description                           | Banner Source                              |
+|----------------|---------------------------------------|--------------------------------------------|
+| student_id     | Banner ID                             | SHRTCKN_PIDM -> SPRIDEN_ID                 |
+| course_code    | Subject + Number (e.g., BIOL1111)     | SHRTCKN_SUBJ_CODE + SHRTCKN_CRSE_NUMB      |
+| grade          | Final grade                           | SHRTCKG_GRDE_CODE_FINAL                    |
+| semester       | Term code (e.g., 2024FA)              | SHRTCKN_TERM_CODE                          |
+| credits_earned | Credit hours earned                   | SHRTCKN_CREDIT_HRS                         |
+
+Scope: All completed coursework for currently enrolled students
+
+---
+
+3. COURSE CATALOG (from Banner SCBCRSE)
+File: catalog.csv
+
+| Field              | Description                           | Banner Source                              |
+|--------------------|---------------------------------------|--------------------------------------------|
+| code               | Subject + Number (e.g., BIOL1111)     | SCBCRSE_SUBJ_CODE + SCBCRSE_CRSE_NUMB      |
+| title              | Course title                          | SCBCRSE_TITLE                              |
+| credits            | Credit hours                          | SCBCRSE_CREDIT_HR_LOW                      |
+| structure_type     | STANDALONE, PARENT, CHILD, or COMBINED| Derived from lab linkage                   |
+| linked_course_code | For labs: parent lecture code         | SSRLINK or SCACRSE linkage                 |
+| attributes         | Course attributes (W, A, I, G, etc.)  | SSRATTR_ATTR_CODE                          |
+
+Scope: All active courses offered by Natural and Applied Sciences (BIOL, CHEM, PHYS, MATH prefixes)
+
+Note on structure_type:
+- STANDALONE = Regular course with no linked lab
+- PARENT = Lecture with a separate linked lab section
+- CHILD = Lab section linked to a parent lecture
+- COMBINED = Lecture + lab combined in one CRN
+
+---
+
+4. PREREQUISITES (from Banner SCRPREQ)
+File: prerequisites.csv
+
+| Field          | Description                    | Banner Source                                      |
+|----------------|--------------------------------|----------------------------------------------------|
+| course_code    | Course requiring the prereq    | SCRPREQ_SUBJ_CODE + SCRPREQ_CRSE_NUMB              |
+| prereq_code    | Required prerequisite course   | SCRPREQ_SUBJ_CODE_PREQ + SCRPREQ_CRSE_NUMB_PREQ    |
+| min_grade      | Minimum grade required         | SCRPREQ_GRDE_CODE_MIN                              |
+| is_corequisite | True if concurrent OK          | SCRPREQ_COREQ_IND                                  |
+
+Scope: All prerequisites for courses in scope
+
+---
+
+5. FACULTY (from Banner SIBINST/SPRIDEN)
+File: faculty.csv
+
+| Field            | Description                          | Banner Source                              |
+|------------------|--------------------------------------|--------------------------------------------|
+| id               | Faculty ID                           | SIBINST_PIDM -> SPRIDEN_ID                 |
+| name             | Full name                            | SPRIDEN_FIRST_NAME + SPRIDEN_LAST_NAME     |
+| email            | Faculty email                        | GOREMAL_EMAIL_ADDRESS                      |
+| max_credits      | Max teaching load (credits/semester) | Department policy (default: 12)            |
+| approved_courses | Courses they can teach               | SIRASGN history or department list         |
+
+Scope: All faculty in Natural and Applied Sciences
+
+---
+
+6. CLASSROOM INVENTORY (from Banner SLBRDEF)
+File: rooms.csv
+
+| Field      | Description                        | Banner Source                              |
+|------------|------------------------------------|--------------------------------------------|
+| id         | Building + Room (e.g., SCI-201)    | SLBRDEF_BLDG_CODE + SLBRDEF_ROOM_NUMBER    |
+| building   | Building name                      | STVBLDG_DESC                               |
+| number     | Room number                        | SLBRDEF_ROOM_NUMBER                        |
+| capacity   | Maximum seating                    | SLBRDEF_CAPACITY                           |
+| room_type  | LECTURE, LAB_BIO, LAB_CHEM, etc.   | SLBRDEF_RMTP_CODE -> mapped                |
+| equipment  | Available equipment                | SLRRASG or room attributes                 |
+| is_active  | Currently schedulable              | SLBRDEF_ACTIVE_IND                         |
+
+Scope: All classrooms used by Natural and Applied Sciences
+
+---
+
+7. DEGREE REQUIREMENTS (from DegreeWorks)
+File: degree_requirements.csv
+
+| Field         | Description                                              |
+|---------------|----------------------------------------------------------|
+| major         | Major code (e.g., BIOL)                                  |
+| concentration | Concentration code (e.g., PRE-MED) or blank for all      |
+| course_code   | Required course                                          |
+| is_required   | True for required, False for elective option             |
+| category      | core, general_ed, track_elective, distribution           |
+| catalog_year  | Catalog year this applies to                             |
+
+Scope: All requirements for Biology, Biology Pre-Med, and Biology Pre-Nursing concentrations (2025-2026 catalog)
+
+---
+
+Preferred Format:
+- CSV files with headers as shown above
+- UTF-8 encoding
+- Date format: YYYYMM for semesters (e.g., 202501 for Spring 2025)
+
+Timeline:
+I would like to begin testing with this data within the next two weeks if possible.
+
+Please let me know if you have questions about any of these requirements or if certain fields are not readily available. I am happy to meet to discuss alternatives or clarifications.
+
+Thank you for your assistance.
+
+Best regards,
+[Your Name]
+[Your Title]
+Department of Natural and Applied Sciences

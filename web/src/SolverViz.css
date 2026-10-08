@@ -1,0 +1,253 @@
+.solver-viz {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* 1. Progress bar */
+.viz-progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.viz-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+.viz-progress-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.viz-phase {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.viz-gap-badge {
+  background: rgba(210, 153, 34, 0.15);
+  color: var(--yellow);
+}
+
+/* 2. Convergence strip */
+.viz-convergence {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.viz-convergence-svg {
+  width: 100%;
+  height: 90px;
+  display: block;
+}
+
+.viz-line-objective {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.viz-line-bound {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.viz-convergence-caption {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* 3. Week grid */
+.viz-grid-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.viz-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.viz-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.viz-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.viz-grid {
+  display: flex;
+  flex-direction: column;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.viz-grid-rows {
+  position: relative;
+}
+
+.viz-grid-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  font-style: italic;
+  color: var(--muted);
+  background: rgba(15, 20, 25, 0.55);
+  pointer-events: none;
+}
+
+.viz-grid-row {
+  display: grid;
+  grid-template-columns: 70px repeat(5, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+
+.viz-grid-header {
+  position: sticky;
+  top: 0;
+  background: var(--panel-2);
+  z-index: 1;
+}
+
+.viz-grid-daylabel {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.viz-grid-timecol {
+  font-size: 10px;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+.viz-grid-daycol {
+  border-left: 1px solid var(--border);
+  min-height: 22px;
+  padding: 2px;
+}
+
+.viz-grid-cell {
+  display: flex;
+  align-items: center;
+}
+
+.viz-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-radius: 4px;
+}
+
+.viz-tile {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+.viz-tiles-flash {
+  animation: vizTileFlash 0.6s ease-out;
+}
+
+@keyframes vizTileFlash {
+  0% {
+    box-shadow: 0 0 0 2px var(--accent), 0 0 10px 3px var(--accent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* 4. Activity footer */
+.viz-footer {
+  font-size: 11px;
+}
+
+/* 5. Machine room: liveness + raw solver output tail */
+.viz-machine {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.viz-liveness {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.viz-spinner {
+  display: inline-block;
+  width: 14px;
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.viz-spinner-stale {
+  color: var(--muted);
+}
+
+.viz-stale {
+  color: var(--yellow);
+}
+
+.viz-console-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.viz-console {
+  background: #0b0f16;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  height: 128px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.viz-console-line {
+  font-size: 11px;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}

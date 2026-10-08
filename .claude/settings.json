@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(//mnt/nvme/gradimize-data/**)",
+      "Read(backups/**)",
+      "Read(exports/**/*.csv)",
+      "Read(exports/**/*.xlsx)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep|Glob|Bash|Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_ferpa.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

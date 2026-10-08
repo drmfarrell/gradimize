@@ -1,0 +1,43 @@
+# Gradimize scheduling API — systemd unit TEMPLATE
+#
+# Install:
+#   1. Run scripts/bootstrap.sh once in the clone (creates .venv, web build, cert).
+#   2. Create a dedicated service user:  sudo useradd -r -s /usr/sbin/nologin gradimize
+#   3. Copy this file to /etc/systemd/system/gradimize.service and edit
+#      User=, WorkingDirectory=, and the Environment lines for your paths.
+#   4. sudo systemctl daemon-reload && sudo systemctl enable --now gradimize
+#
+# This serves the built web UI + API the same way `serve.sh --secure` does,
+# minus the sample-data seeding step (bootstrap.sh handles first seeding).
+# Logs go to journald: journalctl -u gradimize -f
+
+[Unit]
+Description=Gradimize scheduling API (HTTPS)
+After=network.target
+
+[Service]
+Type=simple
+User=gradimize
+WorkingDirectory=/opt/gradimize
+# Live data directory outside the repo tree (see docs/VM_SETUP.md):
+#Environment=GRADIMIZE_DATA_DIR=/opt/gradimize-data
+# Fixed API token; omit to use the generated data/access_token.txt:
+#Environment=GRADIMIZE_TOKEN=
+ExecStart=/opt/gradimize/.venv/bin/python -m uvicorn src.api.main:app \
+    --host 0.0.0.0 --port 8443 \
+    --ssl-certfile certs/gradimize.crt --ssl-keyfile certs/gradimize.key
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+# Must cover WorkingDirectory (DB/token/cert writes) and GRADIMIZE_DATA_DIR if set:
+ReadWritePaths=/opt/gradimize
+#ReadWritePaths=/opt/gradimize /opt/gradimize-data
+
+[Install]
+WantedBy=multi-user.target

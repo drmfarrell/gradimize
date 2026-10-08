@@ -1,0 +1,22 @@
+{
+  "_comment": "FERPA gate for subagent delegation: student-data paths and telltale content must never be handed to a worker (allow_agents empty = block every worker; handle inline, where guard_ferpa.py then also polices tool calls). The gate fails CLOSED. Schema follows the frugal plugin's examples/frugal-sensitivity.example.json: patterns are Python regexes over all string fields of the spawn; paths are fnmatch globs over whitespace-separated tokens (* matches /).",
+  "rules": [
+    {
+      "name": "ferpa-student-data",
+      "_comment": "Live data zone, raw student extracts, any sqlite DB, DB backups, roster exports, and the doctor flag that prints student ids. data/sample/** (synthetic) deliberately does NOT match.",
+      "patterns": ["gradimize-data", "--show-values"],
+      "paths": [
+        "/mnt/nvme/gradimize-data/*",
+        "data/students.csv",
+        "data/course_history.csv",
+        "data/registrations.csv",
+        "*.db",
+        "backups/*",
+        "incoming/*",
+        "exports/*.csv",
+        "exports/*.xlsx"
+      ],
+      "allow_agents": []
+    }
+  ]
+}

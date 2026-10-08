@@ -1,0 +1,11 @@
+major,concentration,catalog_year,semester_number,course_code,category,credits,label
+BIOL,,2024,1,BIOL1101,,4,Introduction to Biology
+BIOL,,2024,1,CHEM1101,,4,General Chemistry I
+BIOL,,2024,1,MATH1101,,3,Calculus I
+BIOL,,2024,1,,general_ed,3,Humanities Elective
+BIOL,,2024,2,BIOL1102,,4,Biology II
+BIOL,,2024,2,CHEM1102,,4,General Chemistry II
+BIOL,,2024,2,,general_ed,3,Social Science Elective
+BIOL,,2024,3,BIOL2201,,4,Cell Biology
+BIOL,,2024,3,,track_elective,3,Major Track Elective
+BIOL,Pre-Medicine,2024,5,CHEM3301,,3,Organic Chemistry I

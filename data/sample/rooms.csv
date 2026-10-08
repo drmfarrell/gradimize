@@ -1,0 +1,21 @@
+id,building,number,capacity,room_type,equipment,is_active
+SCI-101,Science Building,101,35,LECTURE,"projector,whiteboard",True
+SCI-102,Science Building,102,35,LECTURE,"projector,whiteboard",True
+SCI-103,Science Building,103,35,LECTURE,"projector,whiteboard",True
+SCI-201,Science Building,201,24,LAB_BIO,"microscopes,specimens,sinks",True
+SCI-202,Science Building,202,24,LAB_CHEM,"fume_hoods,sinks,safety_shower",True
+SCI-203,Science Building,203,20,LAB_WET,"sinks,equipment_benches",True
+SCI-301,Science Building,301,30,LAB_DRY,"computers,projector",True
+HUM-101,Humanities Building,101,40,LECTURE,"projector,whiteboard",True
+HUM-102,Humanities Building,102,40,LECTURE,"projector,whiteboard",True
+HUM-103,Humanities Building,103,40,LECTURE,"projector,whiteboard",True
+HUM-104,Humanities Building,104,40,LECTURE,"projector,whiteboard",True
+HUM-201,Humanities Building,201,20,SEMINAR,"projector,whiteboard",True
+HUM-202,Humanities Building,202,18,SEMINAR,"projector,whiteboard",True
+BUS-101,Business Building,101,45,LECTURE,"projector,whiteboard",True
+BUS-102,Business Building,102,45,LECTURE,"projector,whiteboard",True
+BUS-103,Business Building,103,45,LECTURE,"projector,whiteboard",True
+BUS-201,Business Building,201,30,LAB_DRY,"computers,projector",True
+LIB-AUD,Library,AUD,150,AUDITORIUM,"projector,microphone,stage",True
+EDU-101,Education Building,101,35,LECTURE,"projector,whiteboard,smartboard",True
+EDU-102,Education Building,102,35,LECTURE,"projector,whiteboard,smartboard",True
